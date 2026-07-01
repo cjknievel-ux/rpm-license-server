@@ -91,4 +91,10 @@ client.login(DISCORD_TOKEN);
 
 app.listen(PORT, () => {
   console.log(`HTTP server on port ${PORT}`);
+  const l = require('localtunnel');
+  l(PORT, (err, tunnel) => {
+    if (err) return console.log('Tunnel error:', err.message);
+    console.log('Public URL:', tunnel.url);
+    require('fs').writeFileSync('tunnel-url.txt', tunnel.url);
+  });
 });
