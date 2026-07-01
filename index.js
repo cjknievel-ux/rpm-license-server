@@ -60,10 +60,8 @@ client.on('interactionCreate', async interaction => {
   }
 
   const raw = rawCodes.join('\n');
-  const rawPaths = paths.map(p => p.replace('valid_codes.txt', 'raw_codes.txt'));
-  for (const p of rawPaths) {
-    try { require('fs').writeFileSync(p, raw + '\n'); } catch {}
-  }
+  const desktopPath = require('path').join(require('os').homedir(), 'Desktop', 'rpmlu_codes.txt');
+  try { require('fs').writeFileSync(desktopPath, raw + '\n'); } catch {}
 
   const display = rawCodes.map(c => '`' + c + '`').join('\n');
   try {
