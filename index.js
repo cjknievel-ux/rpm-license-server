@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
-const Database = require('better-sqlite3');
+const { DatabaseSync } = require('node:sqlite');
 const crypto = require('crypto');
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
@@ -15,9 +15,7 @@ if (!DISCORD_TOKEN || !ADMIN_USER_ID || !GUILD_ID) {
   process.exit(1);
 }
 
-const db = new Database('licenses.db');
-db.pragma('journal_mode = WAL');
-
+const db = new DatabaseSync('licenses.db');
 db.exec(`CREATE TABLE IF NOT EXISTS codes (
   code TEXT PRIMARY KEY,
   used INTEGER DEFAULT 0,
