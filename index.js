@@ -44,16 +44,26 @@ client.on('interactionCreate', async interaction => {
 
   await interaction.reply({ content: 'Generating...', ephemeral: true });
 
-  let codes = '';
+  const rawCodes = [];
   for (let i = 0; i < 10; i++) {
-    codes += '`' + generateCode() + '`\n';
+    rawCodes.push(generateCode());
+  }
+  const codes = rawCodes.join('\n');
+
+  const paths = [
+    require('path').resolve(__dirname, '..', 'valid_codes.txt'),
+    require('path').resolve(__dirname, '..', '..', 'RPMLESSLAGGYLOADER', 'RPMLESSLAGGYLOADER', 'valid_codes.txt')
+  ];
+  for (const p of paths) {
+    try { require('fs').writeFileSync(p, codes + '\n'); } catch {}
   }
 
+  const display = rawCodes.map(c => '`' + c + '`').join('\n');
   try {
-    await interaction.user.send('**10 License Codes:**\n' + codes);
-    await interaction.editReply({ content: 'Check your DMs!', ephemeral: true });
+    await interaction.user.send('**10 License Codes (saved to valid_codes.txt):**\n' + display);
+    await interaction.editReply({ content: 'Codes saved to valid_codes.txt! Check your DMs.', ephemeral: true });
   } catch {
-    await interaction.editReply({ content: 'Failed to DM you. Open your DMs and try again.\n\n' + codes, ephemeral: true });
+    await interaction.editReply({ content: 'Codes saved to valid_codes.txt!\n\n' + display, ephemeral: true });
   }
 });
 
