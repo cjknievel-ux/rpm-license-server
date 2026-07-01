@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
+const crypto = require('crypto');
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const ADMIN_USER_ID = process.env.ADMIN_USER_ID;
@@ -48,14 +49,20 @@ client.on('interactionCreate', async interaction => {
   for (let i = 0; i < 10; i++) {
     rawCodes.push(generateCode());
   }
-  const codes = rawCodes.join('\n');
+  const hashed = rawCodes.map(c => crypto.createHash('sha256').update(c).digest('hex')).join('\n');
 
   const paths = [
     require('path').resolve(__dirname, '..', 'valid_codes.txt'),
     require('path').resolve(__dirname, '..', '..', 'RPMLESSLAGGYLOADER', 'RPMLESSLAGGYLOADER', 'valid_codes.txt')
   ];
   for (const p of paths) {
-    try { require('fs').writeFileSync(p, codes + '\n'); } catch {}
+    try { require('fs').writeFileSync(p, hashed + '\n'); } catch {}
+  }
+
+  const raw = rawCodes.join('\n');
+  const rawPaths = paths.map(p => p.replace('valid_codes.txt', 'raw_codes.txt'));
+  for (const p of rawPaths) {
+    try { require('fs').writeFileSync(p, raw + '\n'); } catch {}
   }
 
   const display = rawCodes.map(c => '`' + c + '`').join('\n');
